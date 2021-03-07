@@ -1,0 +1,138 @@
+/*******************************************************************************
+ System Interrupts File
+
+  File Name:
+    system_interrupt.c
+
+  Summary:
+    Raw ISR definitions.
+
+  Description:
+    This file contains a definitions of the raw ISRs required to support the
+    interrupt sub-system.
+
+  Summary:
+    This file contains source code for the interrupt vector functions in the
+    system.
+
+  Description:
+    This file contains source code for the interrupt vector functions in the
+    system.  It implements the system and part specific vector "stub" functions
+    from which the individual "Tasks" functions are called for any modules
+    executing interrupt-driven in the MPLAB Harmony system.
+
+  Remarks:
+    This file requires access to the systemObjects global data structure that
+    contains the object handles to all MPLAB Harmony module objects executing
+    interrupt-driven in the system.  These handles are passed into the individual
+    module "Tasks" functions to identify the instance of the module to maintain.
+ *******************************************************************************/
+
+// DOM-IGNORE-BEGIN
+/*******************************************************************************
+Copyright (c) 2011-2014 released Microchip Technology Inc.  All rights reserved.
+
+Microchip licenses to you the right to use, modify, copy and distribute
+Software only when embedded on a Microchip microcontroller or digital signal
+controller that is integrated into your product or third party product
+(pursuant to the sublicense terms in the accompanying license agreement).
+
+You should refer to the license agreement accompanying this Software for
+additional information regarding your rights and obligations.
+
+SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
+MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
+IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
+CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
+OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
+INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
+CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
+SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
+(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
+ *******************************************************************************/
+// DOM-IGNORE-END
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Included Files
+// *****************************************************************************
+// *****************************************************************************
+
+#include "system/common/sys_common.h"
+#include "app.h"
+#include "system_definitions.h"
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: System Interrupt Vector Functions
+// *****************************************************************************
+// *****************************************************************************
+
+extern QueueHandle_t qh_SERVOPOSITIONS_Queue;
+
+ 
+ 
+void IntHandlerDrvOCInstance0(void)
+{
+    BaseType_t xHigherPriorityTaskWoken;
+    uint8_t ui8;
+    static uint8_t ui8PulseGenState = 0;
+    static uint32_t ui32PulseLengthSum = 0;
+    SERVO_POSITIONS_TYPE servoPosTMRticks;
+    static uint16_t servoPositionsTMRticks[CHANNELCOUNT] = {DEFAULTSERVOPOSITIONUS*TMRTICKSPERUS, DEFAULTSERVOPOSITIONUS*TMRTICKSPERUS,
+                                                            DEFAULTSERVOPOSITIONUS*TMRTICKSPERUS, DEFAULTSERVOPOSITIONUS*TMRTICKSPERUS,
+                                                            DEFAULTSERVOPOSITIONUS*TMRTICKSPERUS, DEFAULTSERVOPOSITIONUS*TMRTICKSPERUS,
+                                                            DEFAULTSERVOPOSITIONUS*TMRTICKSPERUS, DEFAULTSERVOPOSITIONUS*TMRTICKSPERUS};
+    bool b_qh_SERVOPOSITIONS_Queue_exists = false;
+    
+    PLIB_INT_SourceFlagClear(INT_ID_0, INT_SOURCE_OUTPUT_COMPARE_1);
+    
+    if (qh_SERVOPOSITIONS_Queue != NULL)
+    {
+        b_qh_SERVOPOSITIONS_Queue_exists = true;
+        if (xQueueReceiveFromISR( qh_SERVOPOSITIONS_Queue, &servoPosTMRticks, &xHigherPriorityTaskWoken ) != errQUEUE_EMPTY )
+        {
+            // Take over the value only if it is valid
+            for (ui8 = 0; ui8 < CHANNELCOUNT; ui8++)
+            {
+                servoPositionsTMRticks[ui8] = servoPosTMRticks.ui16_ServoPulseDurationTMRticks[ui8];
+            }
+        }
+    }
+
+    //OC1R = (LOWPULSEDURATIONUS*TMRTICKSPERUS)-FIXCOMPAREMISSINGTICK;
+
+    if (ui8PulseGenState < CHANNELCOUNT)
+    {
+        OC1RS = servoPositionsTMRticks[ui8PulseGenState] - FIXCOMPAREMISSINGTICK;
+        ui32PulseLengthSum += servoPositionsTMRticks[ui8PulseGenState];
+        ui8PulseGenState++;
+    }
+    else
+    {
+        OC1RS = FRAMELENGTHUS*TMRTICKSPERUS - ui32PulseLengthSum - FIXCOMPAREMISSINGTICK;
+        ui32PulseLengthSum = 0;
+        ui8PulseGenState = 0;        
+    }
+    
+    if (OC1RS > 65535)
+    {
+        LEDOn();
+        configASSERT(0);
+    }
+    
+    PR3 = OC1RS;
+
+    if (b_qh_SERVOPOSITIONS_Queue_exists)
+        portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
+}
+
+void IntHandlerUSBInstance0(void)
+{
+    DRV_USBFS_Tasks_ISR(sysObj.drvUSBObject);
+}
+
+/*******************************************************************************
+ End of File
+*/

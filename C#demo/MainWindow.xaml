@@ -1,0 +1,103 @@
+﻿<Window x:Name="wMainWindow" x:Class="ServoControl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="USB2PPM Demo" Height="500" Width="500" MinHeight="500" MinWidth="500" Background="#FFF0F0F0" ResizeMode="CanResizeWithGrip" >
+    <Grid x:Name="TitleBarMainWindowGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Row="0" x:Name="orangeRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stroke="Black" Fill="#FFF6881E" />
+        <Grid x:Name="TitleBarGrid" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="220" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" x:Name="lblTitle" Content="USB2PPM Demo" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontStyle="Normal" FontWeight="Bold" FontSize="16" Foreground="White" />
+            <CheckBox x:Name="cbSweep" Content="Sweep" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" FontStyle="Normal" FontWeight="Bold" FontSize="16" Foreground="White" Checked="cbSweep_Checked" Unchecked="cbSweep_Unchecked"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Label x:Name="lblPort" Content="Port:" FontStyle="Normal" FontWeight="Bold" FontSize="16" Foreground="White" Margin="10,0,0,0" />
+                <ComboBox x:Name="cbSerialPort" Height="26" Width="70" />
+                <Button x:Name="btConnectDisconnect" Content="_Connect" Height="26" Width="75" Margin="10,0,0,0" Click="btConnectDisconnect_Click" />
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="MainGrid" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid x:Name="Ch1" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Ch 1:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Slider x:Name="slider_ch1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Maximum="2000" Minimum="1000" SmallChange="1" TickPlacement="Both" TickFrequency="100" Value="1500" ValueChanged="Slider_ValueChanged" MouseDoubleClick="slider_ch1_MouseDoubleClick"/>
+            </Grid>
+            <Grid x:Name="Ch2" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Ch 2:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Slider x:Name="slider_ch2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Maximum="2000" Minimum="1000" SmallChange="1" TickPlacement="Both" TickFrequency="100" Value="1500" ValueChanged="Slider_ValueChanged" MouseDoubleClick="slider_ch2_MouseDoubleClick"/>
+            </Grid>
+            <Grid x:Name="Ch3" Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Ch 3:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Slider x:Name="slider_ch3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Maximum="2000" Minimum="1000" SmallChange="1" TickPlacement="Both" TickFrequency="100" Value="1500" ValueChanged="Slider_ValueChanged" MouseDoubleClick="slider_ch3_MouseDoubleClick"/>
+            </Grid>
+            <Grid x:Name="Ch4" Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Ch 4:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Slider x:Name="slider_ch4" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Maximum="2000" Minimum="1000" SmallChange="1" TickPlacement="Both" TickFrequency="100" Value="1500" ValueChanged="Slider_ValueChanged" MouseDoubleClick="slider_ch4_MouseDoubleClick"/>
+            </Grid>
+            <Grid x:Name="Ch5" Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Ch 5:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Slider x:Name="slider_ch5" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Maximum="2000" Minimum="1000" SmallChange="1" TickPlacement="Both" TickFrequency="100" Value="1500" ValueChanged="Slider_ValueChanged" MouseDoubleClick="slider_ch5_MouseDoubleClick"/>
+            </Grid>
+            <Grid x:Name="Ch6" Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Ch 6:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Slider x:Name="slider_ch6" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Maximum="2000" Minimum="1000" SmallChange="1" TickPlacement="Both" TickFrequency="100" Value="1500" ValueChanged="Slider_ValueChanged" MouseDoubleClick="slider_ch6_MouseDoubleClick"/>
+            </Grid>
+            <Grid x:Name="Ch7" Grid.Row="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Ch 7:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Slider x:Name="slider_ch7" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Maximum="2000" Minimum="1000" SmallChange="1" TickPlacement="Both" TickFrequency="100" Value="1500" ValueChanged="Slider_ValueChanged" MouseDoubleClick="slider_ch7_MouseDoubleClick"/>
+            </Grid>
+            <Grid x:Name="Ch8" Grid.Row="7">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Ch 8:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Slider x:Name="slider_ch8" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Maximum="2000" Minimum="1000" SmallChange="1" TickPlacement="Both" TickFrequency="100" Value="1500" ValueChanged="Slider_ValueChanged" MouseDoubleClick="slider_ch8_MouseDoubleClick"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

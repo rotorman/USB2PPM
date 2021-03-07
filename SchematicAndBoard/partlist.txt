@@ -1,0 +1,12 @@
+C1-C5  100nF                 SMD 0805
+C6     1µF 6V                SMC-A
+IC1    PIC32MX270F256D-I/PT  TQFP44
+IC2    8.0 MHz 3.3V Osc      DFN_3.2X5MM  EuroQuarz 8.000MHZ XO53050UITA
+IC3    TC1262-3.3VDBTR       SOT223
+L1-L2  10µH                  SMD 3225
+LED1   green                 SMD 0805
+R1     10K                   SMD 0805
+R2     270R                  SMD 0805
+S1     USB-A                 LUMBERG 53842
+S2     3,5mm mono jack with cable
+S3     ICSP header, Molex PicoBlade 53398-0571
