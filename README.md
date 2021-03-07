@@ -48,3 +48,9 @@ When sending the servo control telegram, you also do not need to adhere to any t
 and here with example values for 1.7ms pulse width: 1.7 * 1000 * 1000 / 200 = 8500.
 
 The first 1000 in the multiplication is to get from milliseconds to microseconds and the second multiplication with 1000 to get from microsecons to nanoseconds.
+
+### Discussion
+
+Project discussion in RC Groups forum blog post:
+
+<https://www.rcgroups.com/forums/showthread.php?3845229-Blog-10-USB2PPM-Interface-for-controlling-a-remote-device-from-PC>
