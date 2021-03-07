@@ -3,7 +3,7 @@ Interface to control a remote device (e.g. a drone) from the PC via a radio link
 
 The USB2PPM circuit gets the signal from PC over USB connection and converts it to Pulse-Position-Modulation (PPM) to be input e.g. over a trainer jack into a remote control transmitter.
 
-<img src="/media/USB2PPM_top.jpg" alt="Top side of the PCB" height="375"/> <img src="/media/USB2PPM_bottom.jpg" alt="Bottom side of the PCB" height="375"/>
+<img src="/media/USB2PPM_top.jpg" alt="Top side of the PCB" height="300"/> <img src="/media/USB2PPM_bottom.jpg" alt="Bottom side of the PCB" height="300"/>
 
 USB2PPM outputs standard trainer port signal. You will find Eagle schematic & board files, Microchip MPLAB X PIC32 Harmony project (including pre-built firmware HEX) and a Microsoft Visual Studio .NET C# project (incl. pre-built Windows binary) to control the board.
 
