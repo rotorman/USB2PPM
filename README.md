@@ -3,7 +3,11 @@ Interface to control a remote device (e.g. a drone) from the PC via a radio link
 
 The USB2PPM circuit gets the signal from PC over USB connection and converts it to Pulse-Position-Modulation (PPM) to be input e.g. over a trainer jack into a remote control transmitter.
 
+<img src="/media/USB2PPM_top.jpg" alt="Top side of the PCB" height="300"/> <img src="/media/USB2PPM_bottom.jpg" alt="Bottom side of the PCB" height="300"/>
+
 USB2PPM outputs standard trainer port signal. You will find Eagle schematic & board files, Microchip MPLAB X PIC32 Harmony project (including pre-built firmware HEX) and a Microsoft Visual Studio .NET C# project (incl. pre-built Windows binary) to control the board.
+
+<img src="/media/DemoGUI.png" alt="Demo GUI" height="375"/>
 
 USB2PPM circuit connects via USB-port of the PC and communicates over virtual serial port. Where the control input stems, depends only on the software running on the PC that transmits this info to the USB2PPM device.
 
@@ -44,3 +48,9 @@ When sending the servo control telegram, you also do not need to adhere to any t
 and here with example values for 1.7ms pulse width: 1.7 * 1000 * 1000 / 200 = 8500.
 
 The first 1000 in the multiplication is to get from milliseconds to microseconds and the second multiplication with 1000 to get from microsecons to nanoseconds.
+
+### Discussion
+
+Project discussion in RC Groups forum blog post:
+
+<https://www.rcgroups.com/forums/showthread.php?3845229-Blog-10-USB2PPM-Interface-for-controlling-a-remote-device-from-PC>
