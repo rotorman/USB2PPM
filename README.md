@@ -5,7 +5,7 @@ The USB2PPM circuit gets the signal from PC over USB connection and converts it 
 
 <img src="/media/USB2PPM_top.jpg" alt="Top side of the PCB" height="300"/> <img src="/media/USB2PPM_bottom.jpg" alt="Bottom side of the PCB" height="300"/>
 
-USB2PPM outputs standard trainer port signal. You will find Eagle schematic & board files, Microchip MPLAB X PIC32 Harmony project (including pre-built firmware HEX) and a Microsoft Visual Studio .NET C# project (incl. pre-built Windows binary) to control the board.
+USB2PPM outputs standard trainer port signal. You will find Eagle schematic & board files, Microchip MPLAB X PIC32 Harmony project (including pre-built firmware HEX) and two Microsoft Visual Studio .NET C# projects (incl. pre-built Windows binary) to control the board.
 
 <img src="/media/DemoGUI.png" alt="Demo GUI" height="375"/>
 
