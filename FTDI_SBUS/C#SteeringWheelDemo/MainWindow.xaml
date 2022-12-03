@@ -64,7 +64,7 @@
                     <ColumnDefinition Width="70"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Brake:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                <Slider x:Name="slider_ch2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="380" Maximum="1904" Minimum="144" SmallChange="4" TickPlacement="Both" TickFrequency="100" MouseDoubleClick="slider_ch2_MouseDoubleClick" Value="1024" LargeChange="100"/>
+                <Slider x:Name="slider_ch2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="380" Maximum="1904" Minimum="144" SmallChange="4" TickPlacement="Both" TickFrequency="100" MouseDoubleClick="slider_ch2_MouseDoubleClick" Value="144" LargeChange="100"/>
                 <TextBox Grid.Column="2" Text="{Binding ElementName=slider_ch2, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="70" Height="20"/>
             </Grid>
             <Grid x:Name="Ch3" Grid.Row="2">
@@ -74,7 +74,7 @@
                     <ColumnDefinition Width="70"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Throttle:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                <Slider x:Name="slider_ch3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="380" Maximum="1904" Minimum="144" SmallChange="4" TickPlacement="Both" TickFrequency="100" MouseDoubleClick="slider_ch3_MouseDoubleClick" Value="1024" LargeChange="100"/>
+                <Slider x:Name="slider_ch3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="380" Maximum="1904" Minimum="144" SmallChange="4" TickPlacement="Both" TickFrequency="100" MouseDoubleClick="slider_ch3_MouseDoubleClick" Value="144" LargeChange="100"/>
                 <TextBox Grid.Column="2" Text="{Binding ElementName=slider_ch3, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="70" Height="20"/>
             </Grid>
         </Grid>

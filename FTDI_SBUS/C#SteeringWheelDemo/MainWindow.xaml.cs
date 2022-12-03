@@ -109,8 +109,8 @@ namespace SteeringWheelDemo
                     MessageBox.Show("Could not close the communication port!" + "\n" + "Error: " + ex.Message);
                 }
                 slider_ch1.Value = DEFAULTPOSITION;
-                slider_ch2.Value = DEFAULTPOSITION;
-                slider_ch3.Value = DEFAULTPOSITION;
+                slider_ch2.Value = MINPOSITION;
+                slider_ch3.Value = MINPOSITION;
 
             }
         }
@@ -178,10 +178,34 @@ namespace SteeringWheelDemo
             UInt16[] ui16ServoPos = new UInt16[CHANNELCOUNT];
 
             if (slider_ch1 != null) ui16ServoPos[0] = (UInt16)(slider_ch1.Value); else ui16ServoPos[0] = DEFAULTPOSITION;
-            if (slider_ch2 != null) ui16ServoPos[1] = (UInt16)(slider_ch2.Value); else ui16ServoPos[1] = DEFAULTPOSITION;
-            if (slider_ch3 != null) ui16ServoPos[2] = (UInt16)(slider_ch3.Value); else ui16ServoPos[2] = DEFAULTPOSITION;
+            if (slider_ch2 != null) ui16ServoPos[1] = (UInt16)(slider_ch2.Value); else ui16ServoPos[1] = MINPOSITION;
+            if (slider_ch3 != null) ui16ServoPos[2] = (UInt16)(slider_ch3.Value); else ui16ServoPos[2] = MINPOSITION;
 
-            for (int i = 3; i < CHANNELCOUNT; i++)
+            // mix throttle & brake into ch4
+            if ((slider_ch2 != null) && (slider_ch3 != null))
+            {
+                ui16ServoPos[3] = (UInt16)(((slider_ch3.Value - MINPOSITION) / 2) - (((slider_ch2.Value) - MINPOSITION) / 2) + DEFAULTPOSITION);
+            }
+            else
+                ui16ServoPos[3] = DEFAULTPOSITION;
+
+            // mix throttle & brake into ch5 with brake priority
+            if ((slider_ch2 != null) && (slider_ch3 != null))
+            {
+                if (slider_ch2.Value > MINPOSITION)
+                {
+                    ui16ServoPos[4] = (UInt16)(-((slider_ch2.Value - MINPOSITION) / 2) + DEFAULTPOSITION);
+                }
+                else
+                {
+                    ui16ServoPos[4] = (UInt16)(((slider_ch3.Value - MINPOSITION) / 2) + DEFAULTPOSITION);
+                }
+            }
+            else
+                ui16ServoPos[4] = DEFAULTPOSITION;
+
+
+            for (int i = 5; i < CHANNELCOUNT; i++)
             {
                 ui16ServoPos[i] = DEFAULTPOSITION;
             }
@@ -209,12 +233,12 @@ namespace SteeringWheelDemo
 
         private void slider_ch2_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            slider_ch2.Value = DEFAULTPOSITION;
+            slider_ch2.Value = MINPOSITION;
         }
 
         private void slider_ch3_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            slider_ch3.Value = DEFAULTPOSITION;
+            slider_ch3.Value = MINPOSITION;
         }
 
         private void btRefresh_Click(object sender, RoutedEventArgs e)
@@ -289,11 +313,11 @@ namespace SteeringWheelDemo
         private void checkbWheel_Checked(object sender, RoutedEventArgs e)
         {
             slider_ch1.Value = DEFAULTPOSITION;
-            slider_ch2.Value = DEFAULTPOSITION;
-            slider_ch3.Value = DEFAULTPOSITION;
+            slider_ch2.Value = MINPOSITION;
+            slider_ch3.Value = MINPOSITION;
 
             dtWheelTimer.Tick += new EventHandler(dtWheelTimer_Tick);   // Register new event for timer to fire
-            dtWheelTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);          // Set timer interval to 20ms evaluating to 50 Hz frame update rate
+            dtWheelTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);       // Set timer interval to 20ms evaluating to 50 Hz frame update rate
             dtWheelTimer.Start();
         }
 
@@ -310,10 +334,10 @@ namespace SteeringWheelDemo
                 RacingWheelReading wheel = racingWheel.GetCurrentReading();
 
                 // Assuming the steering is between -1 and +1, then the following converts it to 144..1904 for S.BUS
-                slider_ch1.Value = (UInt16)(1024 + 880 * wheel.Wheel);
+                slider_ch1.Value = (UInt16)(DEFAULTPOSITION + ((MAXPOSITION - MINPOSITION)/2) * wheel.Wheel);
                 // Assuming brake and throttle are between 0 and +1, then the following converts it to 144..1904 for S.BUS
-                slider_ch2.Value = (UInt16)(144 + 1760 * wheel.Brake);
-                slider_ch3.Value = (UInt16)(144 + 1760 * wheel.Throttle);
+                slider_ch2.Value = (UInt16)(MINPOSITION + (MAXPOSITION - MINPOSITION) * wheel.Brake);
+                slider_ch3.Value = (UInt16)(MINPOSITION + (MAXPOSITION - MINPOSITION) * wheel.Throttle);
             }
         }
     }
