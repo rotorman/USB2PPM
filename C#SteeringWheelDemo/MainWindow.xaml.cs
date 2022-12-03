@@ -309,8 +309,9 @@ namespace SteeringWheelDemo
             {
                 RacingWheelReading wheel = racingWheel.GetCurrentReading();
 
-                // Assuming input is between -1 and +1, then the following converts it to 144..1904 for S.BUS
+                // Assuming the steering is between -1 and +1, then the following converts it to 144..1904 for S.BUS
                 slider_ch1.Value = (UInt16)(1024 + 880 * wheel.Wheel);
+                // Assuming brake and throttle are between 0 and +1, then the following converts it to 144..1904 for S.BUS
                 slider_ch2.Value = (UInt16)(144 + 1760 * wheel.Brake);
                 slider_ch3.Value = (UInt16)(144 + 1760 * wheel.Throttle);
             }
