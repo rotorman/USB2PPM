@@ -28,6 +28,17 @@ namespace SteeringWheelDemo
         private const UInt16 DEFAULTPOSITION = 1024;   // 1.5 ms
         private const UInt16 MINPOSITION = 144;        // ca. 1 ms
         private const UInt16 MAXPOSITION = 1904;       // ca. 2 ms
+        private const UInt16 CENTERPOSITION = 1024;
+        private const UInt16 WHEELDIFFERENCE = (MAXPOSITION - MINPOSITION) / 2;
+        private const UInt16 PADELDIFFERENCE = MAXPOSITION - MINPOSITION;
+        private const int SBUS_BAUDRATE = 100000;
+        private const int SBUS_DATABITS = 8;
+        private const StopBits SBUS_STOPBITS = StopBits.Two;
+
+        private const UInt16 FILEHEADER = 0xaabb;
+        private const UInt16 FILEFOOTER = 0xccdd;
+
+        private int ErrCount = 1;
 
         // Variable declarations
         private SerialPort spUSB = new SerialPort(); // Communication over (virtual) serial port 
@@ -41,7 +52,8 @@ namespace SteeringWheelDemo
         {
             InitializeComponent();
             btConnectDisconnect.Content = sCONNECT; // Initialize the button content
-            spUSB.DataReceived += new SerialDataReceivedEventHandler(spUSB_DataReceived); // Register new event for receiving serial data
+            // Remove below commant if you want to receive the data and write it into the binary file.
+            //spUSB.DataReceived += new SerialDataReceivedEventHandler(spUSB_DataReceived); // Register new event for receiving serial data
             AddDevices();
         }
 
@@ -55,8 +67,8 @@ namespace SteeringWheelDemo
 
                 // Set (virtual) serial port parameters
                 // S.BUS is 100.000 baud 8E2
-                spUSB.BaudRate = 100000;
-                spUSB.DataBits = 8; // default is 8
+                spUSB.BaudRate = SBUS_BAUDRATE;
+                spUSB.DataBits = SBUS_DATABITS; // default is 8
                 // spUSB.DiscardNull = false; // default is false
                 // spUSB.DtrEnable = false; // default is false
                 // spUSB.Handshake = Handshake.None; // default is None
@@ -67,7 +79,7 @@ namespace SteeringWheelDemo
                 // spUSB.ReadTimeout = -1; // -1 = default = InfiniteTimeout
                 // spUSB.ReceivedBytesThreshold = 1; // Fire receive event when this amount of data is available, Default = 1
                 spUSB.RtsEnable = true;
-                spUSB.StopBits = StopBits.Two; // One is default
+                spUSB.StopBits = SBUS_STOPBITS; // One is default
                 //spUSB.WriteBufferSize = 2048; // Default 2048
                 //spUSB.WriteTimeout = -1; // -1 = default = InfiniteTimeout
 
@@ -87,7 +99,7 @@ namespace SteeringWheelDemo
                 catch (Exception ex)
                 {
                     // In case of error, show message to user
-                    MessageBox.Show("Could not open the communication port!" + "\n" + "Error: " + ex.Message);
+                    OutputList.Items.Add(ErrCount++.ToString() + "Could not open the communication port!" + "\n" + "Error: " + ex.Message);
                 }
             }
             else
@@ -106,7 +118,7 @@ namespace SteeringWheelDemo
                 catch (Exception ex)
                 {
                     // In case of error, show message to user
-                    MessageBox.Show("Could not close the communication port!" + "\n" + "Error: " + ex.Message);
+                    OutputList.Items.Add(ErrCount++.ToString() + "Could not close the communication port!" + "\n" + "Error: " + ex.Message);
                 }
                 slider_ch1.Value = DEFAULTPOSITION;
                 slider_ch2.Value = MINPOSITION;
@@ -123,22 +135,26 @@ namespace SteeringWheelDemo
         {
             int iDataLength = spUSB.BytesToRead; // The amount of bytes, serial port has received
             byte[] baSerialPortDataIn = new byte[iDataLength]; // Create an internal array to store the data
-            if (iDataLength > 0) // Makes sense to continue only, if there really is new data available
+            try
             {
-                spUSB.Read(baSerialPortDataIn, 0, iDataLength); // Copy the data from serial port to internal array
-
-                ushort[] fileHdr = new ushort[2];
-                fileHdr[0] = 0xaabb;
-                fileHdr[1] = 0xccdd;
-                using (var stream = new FileStream("test.bin", FileMode.Append, FileAccess.Write, FileShare.None))
-                using (var writer = new BinaryWriter(stream))
+                if (iDataLength > 0) // Makes sense to continue only, if there really is new data available
                 {
-                    writer.Write(fileHdr[0]);
-                    writer.Write(baSerialPortDataIn);
-                    writer.Write(fileHdr[1]);
-                }
+                    spUSB.Read(baSerialPortDataIn, 0, iDataLength); // Copy the data from serial port to internal array
 
-                // Discard the data
+                    // Write the received data into binary file.
+                    using (var stream = new FileStream("SerialReceivedData.bin", FileMode.Append, FileAccess.Write, FileShare.None))
+                    using (var writer = new BinaryWriter(stream))
+                    {
+                        writer.Write(FILEHEADER);
+                        writer.Write(baSerialPortDataIn);
+                        writer.Write(FILEFOOTER);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // In case of error, show message to user
+                OutputList.Items.Add(ErrCount++.ToString() + "Could not receive the data from the serial port of could not write data into file!" + "\n" + "Error: " + ex.Message);
             }
         }
 
@@ -146,7 +162,7 @@ namespace SteeringWheelDemo
         {
             byte[] buf_ = new byte[25];
             buf_[0] = bHEADER;
-            buf_[1] = (byte)((ch_[0] & 0x07FF));
+            buf_[1] = (byte)(ch_[0] & 0x07FF);
             buf_[2] = (byte)((ch_[0] & 0x07FF) >> 8 | (ch_[1] & 0x07FF) << 3);
             buf_[3] = (byte)((ch_[1] & 0x07FF) >> 5 | (ch_[2] & 0x07FF) << 6);
             buf_[4] = (byte)((ch_[2] & 0x07FF) >> 2);
@@ -157,7 +173,7 @@ namespace SteeringWheelDemo
             buf_[9] = (byte)((ch_[5] & 0x07FF) >> 9 | (ch_[6] & 0x07FF) << 2);
             buf_[10] = (byte)((ch_[6] & 0x07FF) >> 6 | (ch_[7] & 0x07FF) << 5);
             buf_[11] = (byte)((ch_[7] & 0x07FF) >> 3);
-            buf_[12] = (byte)((ch_[8] & 0x07FF));
+            buf_[12] = (byte)(ch_[8] & 0x07FF);
             buf_[13] = (byte)((ch_[8] & 0x07FF) >> 8 | (ch_[9] & 0x07FF) << 3);
             buf_[14] = (byte)((ch_[9] & 0x07FF) >> 5 | (ch_[10] & 0x07FF) << 6);
             buf_[15] = (byte)((ch_[10] & 0x07FF) >> 2);
@@ -222,7 +238,7 @@ namespace SteeringWheelDemo
             catch (Exception ex)
             {
                 // In case of error, show message to user
-                MessageBox.Show("Could not write data out the communication port!" + "\n" + "Error: " + ex.Message);
+                OutputList.Items.Add(ErrCount++.ToString() + ". " + "Could not write data out the communication port!" + "\n" + "Error: " + ex.Message);
             }
         }
 
@@ -272,7 +288,7 @@ namespace SteeringWheelDemo
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                OutputList.Items.Add(ErrCount++.ToString() + ". " + ex.Message);
             }
         }
 
@@ -280,6 +296,7 @@ namespace SteeringWheelDemo
         {
             try
             {
+                checkbWheel.IsEnabled = false;
                 controllers = RawGameController.RawGameControllers;
                 if (controllers.Any())
                 {
@@ -291,12 +308,13 @@ namespace SteeringWheelDemo
 
                 if (cbWheel.Items.Count > 0)
                 {
+                    checkbWheel.IsEnabled = true;
                     cbWheel.Text = cbWheel.Items[0].ToString();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                OutputList.Items.Add(ErrCount++.ToString() + ". " + ex.Message);
             }
         }
 
@@ -328,16 +346,24 @@ namespace SteeringWheelDemo
 
         private void dtWheelTimer_Tick(object sender, EventArgs e)
         {
-            RacingWheel racingWheel = RacingWheel.FromGameController(RawGameController.RawGameControllers[cbWheel.SelectedIndex]);
-            if (racingWheel != null)
+            try
             {
-                RacingWheelReading wheel = racingWheel.GetCurrentReading();
+                RacingWheel racingWheel = RacingWheel.FromGameController(RawGameController.RawGameControllers[cbWheel.SelectedIndex]);
+                if (racingWheel != null)
+                {
+                    RacingWheelReading wheel = racingWheel.GetCurrentReading();
 
-                // Assuming the steering is between -1 and +1, then the following converts it to 144..1904 for S.BUS
-                slider_ch1.Value = (UInt16)(DEFAULTPOSITION + ((MAXPOSITION - MINPOSITION)/2) * wheel.Wheel);
-                // Assuming brake and throttle are between 0 and +1, then the following converts it to 144..1904 for S.BUS
-                slider_ch2.Value = (UInt16)(MINPOSITION + (MAXPOSITION - MINPOSITION) * wheel.Brake);
-                slider_ch3.Value = (UInt16)(MINPOSITION + (MAXPOSITION - MINPOSITION) * wheel.Throttle);
+                    // Assuming input wheel value is between -1 and +1, then the following converts it to 144..1904 for S.BUS
+                    slider_ch1.Value = (UInt16)(CENTERPOSITION + WHEELDIFFERENCE * wheel.Wheel);
+                    // Assuming input break and throttle value is between 0 and +1, then the following converts it to 144..1904 for S.BUS
+                    slider_ch2.Value = (UInt16)(MINPOSITION + PADELDIFFERENCE * wheel.Brake);
+                    slider_ch3.Value = (UInt16)(MINPOSITION + PADELDIFFERENCE * wheel.Throttle);
+                }
+            }
+            catch (Exception ex)
+            {
+                dtWheelTimer.Stop();
+                OutputList.Items.Add(ErrCount++.ToString() + ". " + "There is a problem with connecting with steering wheel because of the following reason - " + ex.Message);
             }
         }
     }
