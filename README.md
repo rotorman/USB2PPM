@@ -54,3 +54,7 @@ The first 1000 in the multiplication is to get from milliseconds to microseconds
 Project discussion in RC Groups forum blog post:
 
 <https://www.rcgroups.com/forums/showthread.php?3845229-Blog-10-USB2PPM-Interface-for-controlling-a-remote-device-from-PC>
+
+# S.BUS
+
+The subfolder FTDI_SBUS has some examples of how to directly output a S.BUS signal from a computer, using e.g. a [FTDI adapter](https://www.sparkfun.com/products/9717) and an [inverter](https://oshwlab.com/feather/S_Bus_Inverter_R2-fWQK2kewO). The inverter can be skipped, if the receiving end expects inverted S.BUS (=non-inverted UART) signal anyhow, for example [RadioMaster TX16S](https://www.radiomasterrc.com/products/tx16s-mark-ii-radio-controller) AUX-ports, used as S.BUS trainer inputs.
