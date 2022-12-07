@@ -1,12 +1,12 @@
 ﻿<Window x:Name="wMainWindow" x:Class="SteeringWheelDemo.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Steering wheel to S.BUS Demo" Height="375" Width="560" Background="#FFF0F0F0" ResizeMode="NoResize">
+        Title="Steering wheel to S.BUS Demo" Height="420" Width="560" Background="#FFF0F0F0" ResizeMode="NoResize">
     <Grid x:Name="TitleBarMainWindowGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="80" />
             <RowDefinition Height="*"/>
-            <RowDefinition Height="120"/>
+            <RowDefinition Height="160"/>
         </Grid.RowDefinitions>
         <Rectangle Grid.Row="0" x:Name="orangeRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stroke="Black" Fill="#FFF6881E" />
         <Grid x:Name="TitleBarGrid" Grid.Row="0">
@@ -36,7 +36,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Label Content="Error Window" FontWeight="Bold" Foreground="Red"/>
-            <ListBox Grid.Row="1" x:Name="OutputList" >
+            <ListBox Grid.Row="1" x:Name="OutputList" Foreground="Red">
             </ListBox>
         </Grid>
 
